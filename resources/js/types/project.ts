@@ -38,3 +38,21 @@ export interface ProjectFormData {
 export interface ProjectResponse {
     data: Project;
 }
+
+
+export type ProjectSortField =
+    | 'client_name'
+    | 'project_name'
+    | 'start_date'
+    | 'due_date'
+    | 'created_at';
+
+export type ProjectSortDirection = 'asc' | 'desc';
+
+export interface ProjectFiltersState {
+    search: string;
+    status: ProjectStatus | '';
+    priority: ProjectPriority | '';
+    sort_by: ProjectSortField;
+    sort_direction: ProjectSortDirection;
+}

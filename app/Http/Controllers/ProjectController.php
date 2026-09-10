@@ -9,19 +9,43 @@ use App\Models\Project;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
+use App\Http\Requests\IndexProjectRequest;
+use Illuminate\Database\Eloquent\Builder;
 
 class ProjectController extends Controller
 {
-    public function index(): AnonymousResourceCollection
+    public function index(IndexProjectRequest $request): AnonymousResourceCollection
     {
+        $filters = $request->validated();
 
-        return ProjectResource::collection(
-            Project::query()
-                ->latest()
-                ->get()
-        );
+        $projects = Project::query()
+            ->when(
+                $filters['search'] ?? null,
+                function (Builder $query, string $search) {
+                    $query->where(function (Builder $query) use ($search) {
+                        $query
+                            ->where('client_name', 'like', "%{$search}%")
+                            ->orWhere('project_name', 'like', "%{$search}%");
+                    });
+                },
+            )
+            ->when(
+                $filters['status'] ?? null,
+                fn (Builder $query, string $status) =>
+                    $query->where('status', $status),
+            )
+            ->when(
+                $filters['priority'] ?? null,
+                fn (Builder $query, string $priority) =>
+                    $query->where('priority', $priority),
+            )
+            ->orderBy(
+                $filters['sort_by'] ?? 'created_at',
+                $filters['sort_direction'] ?? 'desc',
+            )
+            ->get();
 
-
+        return ProjectResource::collection($projects);
     }
 
     public function store(StoreProjectRequest $request): JsonResponse

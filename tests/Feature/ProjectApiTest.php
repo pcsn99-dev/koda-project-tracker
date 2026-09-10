@@ -164,11 +164,98 @@ test('due date cannot be earlier than start date', function () {
 
 
 test('unauthenticated users cannot access projects', function () {
-    
+
     auth()->logout();
 
     $this->getJson('/projects')
         ->assertUnauthorized();
 
 
+});
+
+
+test('projects can be searched by client or project name', function () {
+    Project::factory()->create([
+        'client_name' => 'Acme Corporation',
+        'project_name' => 'Corporate Website',
+    ]);
+
+    Project::factory()->create([
+        'client_name' => 'Other Company',
+        'project_name' => 'Mobile Application',
+    ]);
+
+    $this->getJson('/projects?search=Acme')
+        ->assertOk()
+        ->assertJsonCount(1, 'data')
+        ->assertJsonPath('data.0.client_name', 'Acme Corporation');
+
+    $this->getJson('/projects?search=Mobile')
+        ->assertOk()
+        ->assertJsonCount(1, 'data')
+        ->assertJsonPath('data.0.project_name', 'Mobile Application');
+});
+
+
+test('projects can be filtered by status', function () {
+    Project::factory()->create([
+        'status' => 'Planning',
+    ]);
+
+    Project::factory()->create([
+        'status' => 'Completed',
+    ]);
+
+    $this->getJson('/projects?status=Completed')
+        ->assertOk()
+        ->assertJsonCount(1, 'data')
+        ->assertJsonPath('data.0.status', 'Completed');
+});
+
+test('projects can be filtered by priority', function () {
+    Project::factory()->create([
+        'priority' => 'High',
+    ]);
+
+    Project::factory()->create([
+        'priority' => 'Low',
+    ]);
+
+    $this->getJson('/projects?priority=High')
+        ->assertOk()
+        ->assertJsonCount(1, 'data')
+        ->assertJsonPath('data.0.priority', 'High');
+});
+
+
+
+test('projects can be sorted', function () {
+    Project::factory()->create([
+        'project_name' => 'Later Project',
+        'due_date' => '2026-12-01',
+    ]);
+
+    Project::factory()->create([
+        'project_name' => 'Earlier Project',
+        'due_date' => '2026-10-01',
+    ]);
+
+    $this->getJson(
+        '/projects?sort_by=due_date&sort_direction=asc',
+    )
+        ->assertOk()
+        ->assertJsonPath('data.0.project_name', 'Earlier Project')
+        ->assertJsonPath('data.1.project_name', 'Later Project');
+});
+
+test('invalid project filters are rejected', function () {
+    $this->getJson(
+        '/projects?status=Invalid&sort_by=password&sort_direction=sideways',
+    )
+        ->assertUnprocessable()
+        ->assertJsonValidationErrors([
+            'status',
+            'sort_by',
+            'sort_direction',
+        ]);
 });

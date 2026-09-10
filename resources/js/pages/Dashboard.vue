@@ -1,8 +1,13 @@
 <script setup lang="ts">
 import CreateProjectForm from '@/components/projects/CreateProjectForm.vue';
 import EditProjectForm from '@/components/projects/EditProjectForm.vue';
+import ProjectFilters from '@/components/projects/ProjectFilters.vue';
 import ProjectTable from '@/components/projects/ProjectTable.vue';
-import type { Project, ProjectCollectionResponse } from '@/types/project';
+import type {
+    Project,
+    ProjectCollectionResponse,
+    ProjectFiltersState,
+} from '@/types/project';
 import { Head, useHttp } from '@inertiajs/vue3';
 import { onMounted, ref } from 'vue';
 
@@ -25,6 +30,14 @@ const showCreateForm = ref(false);
 const loadError = ref<string | null>(null);
 const deleteError = ref<string | null>(null);
 
+const activeFilters = ref<ProjectFiltersState>({
+    search: '',
+    status: '',
+    priority: '',
+    sort_by: 'created_at',
+    sort_direction: 'desc',
+});
+
 const projectsRequest = useHttp<
     Record<string, never>,
     ProjectCollectionResponse
@@ -42,19 +55,16 @@ function startEditing(project: Project) {
     selectedProject.value = project;
 }
 
-function handleProjectCreated(project: Project) {
-    projects.value.unshift(project);
+async function handleProjectCreated() {
     showCreateForm.value = false;
+
+    await loadProjects();
 }
 
-function handleProjectUpdated(project: Project) {
-    const index = projects.value.findIndex((item) => item.id === project.id);
-
-    if (index !== -1) {
-        projects.value[index] = project;
-    }
-
+async function handleProjectUpdated() {
     selectedProject.value = null;
+
+    await loadProjects();
 }
 
 async function deleteProject(project: Project) {
@@ -69,14 +79,12 @@ async function deleteProject(project: Project) {
     deleteError.value = null;
 
     await deleteRequest.delete(`/projects/${project.id}`, {
-        onSuccess: () => {
-            projects.value = projects.value.filter(
-                (item) => item.id !== project.id,
-            );
-
+        onSuccess: async () => {
             if (selectedProject.value?.id === project.id) {
                 selectedProject.value = null;
             }
+
+            await loadProjects();
         },
 
         onHttpException: () => {
@@ -89,10 +97,32 @@ async function deleteProject(project: Project) {
     });
 }
 
-async function loadProjects() {
+async function loadProjects(filters?: ProjectFiltersState) {
+    if (filters) {
+        activeFilters.value = { ...filters };
+    }
+
     loadError.value = null;
 
-    await projectsRequest.get('/projects', {
+    const params = new URLSearchParams();
+    const current = activeFilters.value;
+
+    if (current.search.trim()) {
+        params.set('search', current.search.trim());
+    }
+
+    if (current.status) {
+        params.set('status', current.status);
+    }
+
+    if (current.priority) {
+        params.set('priority', current.priority);
+    }
+
+    params.set('sort_by', current.sort_by);
+    params.set('sort_direction', current.sort_direction);
+
+    await projectsRequest.get(`/projects?${params.toString()}`, {
         onSuccess: (response) => {
             projects.value = response.data;
         },
@@ -120,7 +150,7 @@ onMounted(loadProjects);
                     Client Project Tracker
                 </h1>
 
-                <p class="text-muted-foreground mt-1 text-sm">
+                <p class="mt-1 text-sm text-muted-foreground">
                     Manage and monitor client projects.
                 </p>
             </div>
@@ -128,7 +158,7 @@ onMounted(loadProjects);
             <button
                 v-if="!showCreateForm"
                 type="button"
-                class="bg-primary text-primary-foreground rounded-md px-4 py-2 text-sm"
+                class="rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground"
                 @click="startCreating"
             >
                 Create Project
@@ -151,19 +181,24 @@ onMounted(loadProjects);
 
         <div
             v-if="deleteError"
-            class="text-destructive rounded-lg border p-4 text-sm"
+            class="rounded-lg border p-4 text-sm text-destructive"
         >
             {{ deleteError }}
         </div>
 
+        <ProjectFilters @apply="loadProjects" />
+
         <div
             v-if="projectsRequest.processing"
-            class="text-muted-foreground py-10 text-center text-sm"
+            class="py-10 text-center text-sm text-muted-foreground"
         >
             Loading projects...
         </div>
 
-        <div v-else-if="loadError" class="rounded-lg border p-4 text-sm">
+        <div
+            v-else-if="loadError"
+            class="rounded-lg border p-4 text-sm"
+        >
             {{ loadError }}
         </div>
 
