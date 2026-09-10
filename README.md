@@ -288,3 +288,13 @@ AI was therefore used as a development and review tool rather than as a replacem
 ## License
 
 This project was created specifically for the Koda Kollectiv Full Stack Developer Technical Assessment.
+
+## Assumptions Made
+
+- The project tracker is treated as a shared workspace. Authentication is required to access it, but projects are not assigned to or restricted by individual users because project ownership was not specified in the requirements.
+- Project descriptions are optional because the validation requirements did not state that a description must be provided.
+- Start Date and Due Date are required when creating or updating a project so that project timelines remain complete and the due-date validation can be applied consistently.
+- Search is limited to Client Name and Project Name, as these are the most useful identifying fields for locating projects.
+- Project listing is paginated at 10 records per page. The page size is fixed to keep the interface and API simple for the scope of the assessment.
+- Newly created projects default to `Planning` status and `Medium` priority in the user interface, while the API still validates all submitted values.
+- Authentication from the Laravel Vue starter kit is used as the access boundary for the tracker. Additional roles and permissions were not added because they were outside the requested scope.
