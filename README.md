@@ -227,35 +227,63 @@ The API feature tests cover project CRUD, validation, authentication, search, fi
 
 ## Technical Decisions
 
-### Laravel + Vue + Inertia
+### Laravel, Vue, and Inertia
 
-Laravel handles routing, validation, authentication, persistence, and the REST API. Vue handles the interactive project management interface. Inertia allows Vue to be used within the Laravel application without maintaining a separate frontend repository.
+I started the project using Laravel's official Vue starter kit through `laravel new`. I chose this setup because I am already comfortable working with Laravel and MySQL, while Vue gave me a good way to build the interactive parts of the project without separating the frontend into another application.
 
-### REST API
+The starter kit also provided the base authentication flow, TypeScript, Tailwind CSS, and Inertia. I kept Inertia mainly for the application shell, layouts, and authentication, while the project data itself is retrieved and modified through the REST endpoints required by the assessment.
 
-Project operations are exposed through the required REST endpoints. API Resources provide a consistent JSON response structure, while Form Requests keep validation separate from controller logic.
+### REST API Structure
 
-### PHP Enums
+The project CRUD is exposed through the required `/projects` endpoints.
 
-Project status and priority are represented with PHP backed enums. This keeps allowed values consistent between model casting and validation.
+I used Form Requests for create, update, and list/filter validation instead of putting all validation rules inside the controller. I also used an API Resource so the JSON returned to the Vue frontend has a predictable structure rather than returning the Eloquent model directly.
 
-### Server-Side Filtering and Pagination
+For this project, I felt that this was enough separation without introducing additional service or repository layers that would add more structure than the application actually needed.
 
-Search, filtering, sorting, and pagination are performed by the backend rather than loading the entire dataset into the browser. This keeps the API scalable and ensures that the backend remains the source of truth.
+### Project Status and Priority
 
-### Validation
+I used PHP backed enums for project status and priority instead of keeping the allowed values as repeated strings throughout the application.
 
-Validation is enforced server-side. In particular, the due date must be on or after the start date, and status and priority values are restricted to the defined enum values.
+The database stores the values as strings, while Laravel uses the enums for model casting and request validation. This keeps values such as `Planning`, `In Progress`, and `High` consistent in the backend.
 
-### Scope
+### Search, Filtering, Sorting, and Pagination
 
-The implementation intentionally avoids unnecessary repository/service abstractions because the application's domain logic is small. Controllers, Form Requests, API Resources, Eloquent models, and enums provide sufficient separation for the scope of the assessment.
+I implemented search, filtering, sorting, and pagination on the server side.
+
+The Vue frontend sends the selected options as query parameters to `GET /projects`, and Laravel applies them to the database query before returning the results.
+
+I chose this instead of loading every project into Vue and filtering the array in the browser because the backend remains responsible for querying the data, and the same API behavior can still work as the number of projects grows.
+
+Pagination is currently limited to 10 projects per page to keep the interface simple.
+
+### Validation and Error Handling
+
+The main validation rules are handled by Laravel on the server. This includes required client and project names, valid status and priority values, and ensuring that the due date is not earlier than the start date.
+
+The Vue forms display the validation errors returned by the API rather than relying only on frontend validation. This keeps the backend as the final source of truth for valid project data.
+
+I also added automated feature tests around the REST API, including CRUD operations, validation, authentication, filtering, sorting, and pagination.
+
+### Scope and Simplicity
+
+Since the assessment is a relatively small project tracker, I tried to avoid adding architecture only for the sake of adding architecture.
+
+For example, I considered extracting additional service/repository layers and combining the create and edit forms into more abstractions, but for the current scope I found the existing separation between controllers, Form Requests, API Resources, models, enums, and Vue components easier to follow and maintain.
+
+My focus was to keep the implementation straightforward while still leaving the project organized enough to extend later.
 
 ## AI Tool Disclosure
 
-AI tools were used during development, primarily ChatGPT, for development guidance, code review, debugging assistance, and discussion of implementation approaches.
+I used ChatGPT during the development of this assessment.
 
-All generated or suggested code was reviewed, adapted, tested, and validated as part of the implementation.
+I mainly used it to help plan the order of development, discuss implementation choices, review code, and troubleshoot issues while I was working through the project. It was also useful for speeding up repetitive work, such as drafting similar validation rules, test cases, Vue form structures, and other boilerplate that I then reviewed and adjusted for the application.
+
+I did not treat generated code as final output. I went through the implementation as I added it, tested the features manually, ran the automated test suite and frontend checks, and made changes when something did not behave as expected.
+
+One example was the Vue/Inertia layout setup. I initially ended up rendering the application layout twice, which caused duplicate sidebar controls. I traced the issue through the starter kit's layout structure and corrected the page to use the global Inertia layout properly.
+
+AI was therefore used as a development and review tool rather than as a replacement for understanding or testing the implementation.
 
 ## License
 
