@@ -3,6 +3,12 @@ import type { Project } from '@/types/project';
 
 defineProps<{
     projects: Project[];
+    deleting?: boolean;
+}>();
+
+const emit = defineEmits<{
+    (e: 'edit', project: Project): void;
+    (e: 'delete', project: Project): void;
 }>();
 </script>
 
@@ -23,6 +29,9 @@ defineProps<{
                         </th>
                         <th class="px-4 py-3 text-left font-medium">
                             Due Date
+                        </th>
+                        <th class="px-4 py-3 text-right font-medium">
+                            Actions
                         </th>
                     </tr>
                 </thead>
@@ -65,11 +74,32 @@ defineProps<{
                         <td class="px-4 py-3">
                             {{ project.due_date }}
                         </td>
+
+                        <td class="px-4 py-3">
+                            <div class="flex justify-end gap-2">
+                                <button
+                                    type="button"
+                                    class="rounded-md border px-3 py-1.5 text-sm"
+                                    @click="emit('edit', project)"
+                                >
+                                    Edit
+                                </button>
+
+                                <button
+                                    type="button"
+                                    class="rounded-md border px-3 py-1.5 text-sm"
+                                    :disabled="deleting"
+                                    @click="emit('delete', project)"
+                                >
+                                    Delete
+                                </button>
+                            </div>
+                        </td>
                     </tr>
 
                     <tr v-if="projects.length === 0">
                         <td
-                            colspan="6"
+                            colspan="7"
                             class="text-muted-foreground px-4 py-10 text-center"
                         >
                             No projects found.
