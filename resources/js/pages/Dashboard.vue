@@ -1,47 +1,98 @@
 <script setup lang="ts">
-import { Head } from '@inertiajs/vue3';
-import PlaceholderPattern from '@/components/PlaceholderPattern.vue';
-import { dashboard } from '@/routes';
+import ProjectTable from '@/components/projects/ProjectTable.vue';
+import AppLayout from '@/layouts/AppLayout.vue';
+import type { BreadcrumbItem } from '@/types';
+import type {Project, ProjectCollectionResponse, } from '@/types/project';
+import { Head, useHttp } from '@inertiajs/vue3';
+import { onMounted, ref } from 'vue';
 
-defineOptions({
-    layout: {
-        breadcrumbs: [
-            {
-                title: 'Dashboard',
-                href: dashboard(),
-            },
-        ],
+
+
+
+
+const breadcrumbs: BreadcrumbItem[] = [
+    {
+        title: 'Projects',
+        href: '/dashboard',
     },
-});
+];
+
+
+const projects = ref<Project[]>([]);
+
+const loadError = ref<string | null>(null);
+
+
+const projectsRequest = useHttp<
+    Record<string, never>,
+    ProjectCollectionResponse
+>({});
+
+
+
+async function loadProjects() {
+    loadError.value = null;
+
+    await projectsRequest.get('/projects', {
+        onSuccess: (response) => {
+            projects.value = response.data;
+        },
+
+
+        onHttpException: () => {
+            loadError.value = 'Unable to load projects.';
+        },
+
+
+        onNetworkError: () => {
+            loadError.value = 'Unable to connect to the server.';
+        },
+
+    });
+
+
+}
+
+onMounted(loadProjects);
 </script>
 
 <template>
-    <Head title="Dashboard" />
+    <Head title="Projects" />
 
-    <div
-        class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4"
-    >
-        <div class="grid auto-rows-min gap-4 md:grid-cols-3">
-            <div
-                class="border-sidebar-border/70 dark:border-sidebar-border relative aspect-video overflow-hidden rounded-xl border"
-            >
-                <PlaceholderPattern />
+    <AppLayout :breadcrumbs="breadcrumbs">
+        <div class="flex h-full flex-1 flex-col gap-6 p-4">
+            <div>
+                <h1 class="text-2xl font-semibold tracking-tight">
+                    Client Project Tracker
+                </h1>
+
+                <p class="mt-1 text-sm text-muted-foreground">
+                    Manage and monitor client projects.
+                </p>
             </div>
+
             <div
-                class="border-sidebar-border/70 dark:border-sidebar-border relative aspect-video overflow-hidden rounded-xl border"
+                v-if="projectsRequest.processing"
+                class="py-10 text-center text-sm text-muted-foreground"
             >
-                <PlaceholderPattern />
+                Loading projects...
             </div>
+
             <div
-                class="border-sidebar-border/70 dark:border-sidebar-border relative aspect-video overflow-hidden rounded-xl border"
+                v-else-if="loadError"
+                class="rounded-lg border p-4 text-sm"
             >
-                <PlaceholderPattern />
+                {{ loadError }}
             </div>
+
+            <ProjectTable
+                v-else
+                :projects="projects"
+            />
         </div>
-        <div
-            class="border-sidebar-border/70 dark:border-sidebar-border relative min-h-[100vh] flex-1 rounded-xl border md:min-h-min"
-        >
-            <PlaceholderPattern />
-        </div>
-    </div>
+
+    </AppLayout>
+
+
+    
 </template>
