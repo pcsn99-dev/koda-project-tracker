@@ -29,17 +29,11 @@ function resetFilters() {
 </script>
 
 <template>
-    <form
-        class="rounded-xl border bg-card p-5"
-        @submit.prevent="applyFilters"
-    >
+    <form class="bg-card rounded-xl border p-5" @submit.prevent="applyFilters">
         <div class="space-y-5">
             <!-- Search -->
             <div class="space-y-2">
-                <label
-                    for="project-search"
-                    class="text-sm font-medium"
-                >
+                <label for="project-search" class="text-sm font-medium">
                     Search
                 </label>
 
@@ -48,8 +42,8 @@ function resetFilters() {
                     v-model="filters.search"
                     type="search"
                     placeholder="Search by client or project name..."
-                    class="w-full rounded-md border bg-background px-3 py-2 text-sm"
-                >
+                    class="bg-background w-full rounded-md border px-3 py-2 text-sm"
+                />
             </div>
 
             <!-- Filter + Sort -->
@@ -57,11 +51,9 @@ function resetFilters() {
                 <!-- Filters -->
                 <div class="space-y-3">
                     <div>
-                        <h3 class="text-sm font-medium">
-                            Filters
-                        </h3>
+                        <h3 class="text-sm font-medium">Filters</h3>
 
-                        <p class="text-xs text-muted-foreground">
+                        <p class="text-muted-foreground text-xs">
                             Narrow projects by status or priority.
                         </p>
                     </div>
@@ -70,7 +62,7 @@ function resetFilters() {
                         <div class="space-y-2">
                             <label
                                 for="status-filter"
-                                class="text-xs font-medium text-muted-foreground"
+                                class="text-muted-foreground text-xs font-medium"
                             >
                                 Status
                             </label>
@@ -78,28 +70,20 @@ function resetFilters() {
                             <select
                                 id="status-filter"
                                 v-model="filters.status"
-                                class="w-full rounded-md border bg-background px-3 py-2 text-sm"
+                                class="bg-background w-full rounded-md border px-3 py-2 text-sm"
                             >
                                 <option value="">All statuses</option>
-                                <option value="Planning">
-                                    Planning
-                                </option>
-                                <option value="In Progress">
-                                    In Progress
-                                </option>
-                                <option value="On Hold">
-                                    On Hold
-                                </option>
-                                <option value="Completed">
-                                    Completed
-                                </option>
+                                <option value="Planning">Planning</option>
+                                <option value="In Progress">In Progress</option>
+                                <option value="On Hold">On Hold</option>
+                                <option value="Completed">Completed</option>
                             </select>
                         </div>
 
                         <div class="space-y-2">
                             <label
                                 for="priority-filter"
-                                class="text-xs font-medium text-muted-foreground"
+                                class="text-muted-foreground text-xs font-medium"
                             >
                                 Priority
                             </label>
@@ -107,18 +91,12 @@ function resetFilters() {
                             <select
                                 id="priority-filter"
                                 v-model="filters.priority"
-                                class="w-full rounded-md border bg-background px-3 py-2 text-sm"
+                                class="bg-background w-full rounded-md border px-3 py-2 text-sm"
                             >
                                 <option value="">All priorities</option>
-                                <option value="Low">
-                                    Low
-                                </option>
-                                <option value="Medium">
-                                    Medium
-                                </option>
-                                <option value="High">
-                                    High
-                                </option>
+                                <option value="Low">Low</option>
+                                <option value="Medium">Medium</option>
+                                <option value="High">High</option>
                             </select>
                         </div>
                     </div>
@@ -127,11 +105,9 @@ function resetFilters() {
                 <!-- Sorting -->
                 <div class="space-y-3">
                     <div>
-                        <h3 class="text-sm font-medium">
-                            Sort
-                        </h3>
+                        <h3 class="text-sm font-medium">Sort</h3>
 
-                        <p class="text-xs text-muted-foreground">
+                        <p class="text-muted-foreground text-xs">
                             Choose how projects are ordered.
                         </p>
                     </div>
@@ -140,7 +116,7 @@ function resetFilters() {
                         <div class="space-y-2">
                             <label
                                 for="sort-by"
-                                class="text-xs font-medium text-muted-foreground"
+                                class="text-muted-foreground text-xs font-medium"
                             >
                                 Sort by
                             </label>
@@ -148,30 +124,22 @@ function resetFilters() {
                             <select
                                 id="sort-by"
                                 v-model="filters.sort_by"
-                                class="w-full rounded-md border bg-background px-3 py-2 text-sm"
+                                class="bg-background w-full rounded-md border px-3 py-2 text-sm"
                             >
-                                <option value="created_at">
-                                    Created Date
-                                </option>
-                                <option value="client_name">
-                                    Client Name
-                                </option>
+                                <option value="created_at">Created Date</option>
+                                <option value="client_name">Client Name</option>
                                 <option value="project_name">
                                     Project Name
                                 </option>
-                                <option value="start_date">
-                                    Start Date
-                                </option>
-                                <option value="due_date">
-                                    Due Date
-                                </option>
+                                <option value="start_date">Start Date</option>
+                                <option value="due_date">Due Date</option>
                             </select>
                         </div>
 
                         <div class="space-y-2">
                             <label
                                 for="sort-direction"
-                                class="text-xs font-medium text-muted-foreground"
+                                class="text-muted-foreground text-xs font-medium"
                             >
                                 Direction
                             </label>
@@ -179,14 +147,10 @@ function resetFilters() {
                             <select
                                 id="sort-direction"
                                 v-model="filters.sort_direction"
-                                class="w-full rounded-md border bg-background px-3 py-2 text-sm"
+                                class="bg-background w-full rounded-md border px-3 py-2 text-sm"
                             >
-                                <option value="asc">
-                                    Ascending
-                                </option>
-                                <option value="desc">
-                                    Descending
-                                </option>
+                                <option value="asc">Ascending</option>
+                                <option value="desc">Descending</option>
                             </select>
                         </div>
                     </div>
@@ -207,12 +171,11 @@ function resetFilters() {
 
                 <button
                     type="submit"
-                    class="rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground"
+                    class="bg-primary text-primary-foreground rounded-md px-4 py-2 text-sm"
                 >
                     Apply Filters
                 </button>
             </div>
         </div>
     </form>
-    
 </template>

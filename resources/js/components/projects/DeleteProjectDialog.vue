@@ -19,24 +19,20 @@ const emit = defineEmits<{
         @click.self="emit('cancel')"
     >
         <div
-            class="w-full max-w-md rounded-xl border bg-background p-6 shadow-lg"
+            class="bg-background w-full max-w-md rounded-xl border p-6 shadow-lg"
             role="dialog"
             aria-modal="true"
             aria-labelledby="delete-project-title"
         >
-            <h2
-                id="delete-project-title"
-                class="text-lg font-semibold"
-            >
+            <h2 id="delete-project-title" class="text-lg font-semibold">
                 Delete project?
             </h2>
 
-            <p class="mt-2 text-sm text-muted-foreground">
+            <p class="text-muted-foreground mt-2 text-sm">
                 You are about to permanently delete
-                <span class="font-medium text-foreground">
-                    {{ project.project_name }}
-                </span>.
-                This action cannot be undone.
+                <span class="text-foreground font-medium">
+                    {{ project.project_name }} </span
+                >. This action cannot be undone.
             </p>
 
             <div class="mt-6 flex justify-end gap-3">
@@ -51,7 +47,7 @@ const emit = defineEmits<{
 
                 <button
                     type="button"
-                    class="rounded-md bg-destructive px-4 py-2 text-sm text-destructive-foreground"
+                    class="bg-destructive text-destructive-foreground rounded-md px-4 py-2 text-sm"
                     :disabled="processing"
                     @click="emit('confirm')"
                 >

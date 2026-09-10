@@ -14,7 +14,6 @@ import { Head, useHttp } from '@inertiajs/vue3';
 import { onMounted, ref } from 'vue';
 import DeleteProjectDialog from '@/components/projects/DeleteProjectDialog.vue';
 
-
 defineOptions({
     layout: {
         breadcrumbs: [
@@ -179,7 +178,7 @@ onMounted(loadProjects);
                     Client Project Tracker
                 </h1>
 
-                <p class="mt-1 text-sm text-muted-foreground">
+                <p class="text-muted-foreground mt-1 text-sm">
                     Manage and monitor client projects.
                 </p>
             </div>
@@ -187,7 +186,7 @@ onMounted(loadProjects);
             <button
                 v-if="!showCreateForm"
                 type="button"
-                class="rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground"
+                class="bg-primary text-primary-foreground rounded-md px-4 py-2 text-sm"
                 @click="startCreating"
             >
                 Create Project
@@ -210,7 +209,7 @@ onMounted(loadProjects);
 
         <div
             v-if="deleteError"
-            class="rounded-lg border p-4 text-sm text-destructive"
+            class="text-destructive rounded-lg border p-4 text-sm"
         >
             {{ deleteError }}
         </div>
@@ -219,15 +218,12 @@ onMounted(loadProjects);
 
         <div
             v-if="projectsRequest.processing"
-            class="py-10 text-center text-sm text-muted-foreground"
+            class="text-muted-foreground py-10 text-center text-sm"
         >
             Loading projects...
         </div>
 
-        <div
-            v-else-if="loadError"
-            class="rounded-lg border p-4 text-sm"
-        >
+        <div v-else-if="loadError" class="rounded-lg border p-4 text-sm">
             {{ loadError }}
         </div>
 
@@ -255,5 +251,4 @@ onMounted(loadProjects);
         @confirm="confirmDelete"
         @cancel="projectToDelete = null"
     />
-
 </template>

@@ -57,24 +57,24 @@ Supported priorities:
 
 ## REST API
 
-| Method | Endpoint | Description |
-| --- | --- | --- |
-| GET | `/projects` | List projects |
-| GET | `/projects/{id}` | Retrieve a project |
-| POST | `/projects` | Create a project |
-| PUT | `/projects/{id}` | Update a project |
-| DELETE | `/projects/{id}` | Delete a project |
+| Method | Endpoint         | Description        |
+| ------ | ---------------- | ------------------ |
+| GET    | `/projects`      | List projects      |
+| GET    | `/projects/{id}` | Retrieve a project |
+| POST   | `/projects`      | Create a project   |
+| PUT    | `/projects/{id}` | Update a project   |
+| DELETE | `/projects/{id}` | Delete a project   |
 
 `GET /projects` also supports:
 
-| Parameter | Description |
-| --- | --- |
-| `search` | Search client or project name |
-| `status` | Filter by project status |
-| `priority` | Filter by project priority |
-| `sort_by` | Select the field used for sorting |
-| `sort_direction` | `asc` or `desc` |
-| `page` | Pagination page |
+| Parameter        | Description                       |
+| ---------------- | --------------------------------- |
+| `search`         | Search client or project name     |
+| `status`         | Filter by project status          |
+| `priority`       | Filter by project priority        |
+| `sort_by`        | Select the field used for sorting |
+| `sort_direction` | `asc` or `desc`                   |
+| `page`           | Pagination page                   |
 
 Example:
 

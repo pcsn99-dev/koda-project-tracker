@@ -44,12 +44,10 @@ export interface PaginationMeta {
     total: number;
 }
 
-
 export interface ProjectCollectionResponse {
     data: Project[];
     meta: PaginationMeta;
 }
-
 
 export type ProjectSortField =
     | 'client_name'
@@ -59,7 +57,6 @@ export type ProjectSortField =
     | 'created_at';
 
 export type ProjectSortDirection = 'asc' | 'desc';
-
 
 export interface ProjectFiltersState {
     search: string;

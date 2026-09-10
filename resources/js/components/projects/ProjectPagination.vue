@@ -15,21 +15,16 @@ const emit = defineEmits<{
     <div
         class="flex flex-col gap-3 border-t pt-4 sm:flex-row sm:items-center sm:justify-between"
     >
-        <p class="text-sm text-muted-foreground">
+        <p class="text-muted-foreground text-sm">
             <template v-if="meta.total > 0">
                 Showing {{ meta.from }} to {{ meta.to }} of
                 {{ meta.total }} projects
             </template>
 
-            <template v-else>
-                No projects found
-            </template>
+            <template v-else> No projects found </template>
         </p>
 
-        <div
-            v-if="meta.last_page > 1"
-            class="flex items-center gap-2"
-        >
+        <div v-if="meta.last_page > 1" class="flex items-center gap-2">
             <button
                 type="button"
                 class="rounded-md border px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50"
@@ -39,16 +34,14 @@ const emit = defineEmits<{
                 Previous
             </button>
 
-            <span class="px-2 text-sm text-muted-foreground">
+            <span class="text-muted-foreground px-2 text-sm">
                 Page {{ meta.current_page }} of {{ meta.last_page }}
             </span>
 
             <button
                 type="button"
                 class="rounded-md border px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50"
-                :disabled="
-                    meta.current_page === meta.last_page || loading
-                "
+                :disabled="meta.current_page === meta.last_page || loading"
                 @click="emit('change', meta.current_page + 1)"
             >
                 Next
