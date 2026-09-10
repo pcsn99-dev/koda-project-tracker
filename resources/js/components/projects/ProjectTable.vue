@@ -10,14 +10,20 @@ defineProps<{
     <div class="overflow-hidden rounded-xl border">
         <div class="overflow-x-auto">
             <table class="w-full text-sm">
-                <thead class="border-b bg-muted/50">
+                <thead class="bg-muted/50 border-b">
                     <tr>
                         <th class="px-4 py-3 text-left font-medium">Client</th>
                         <th class="px-4 py-3 text-left font-medium">Project</th>
                         <th class="px-4 py-3 text-left font-medium">Status</th>
-                        <th class="px-4 py-3 text-left font-medium">Priority</th>
-                        <th class="px-4 py-3 text-left font-medium">Start Date</th>
-                        <th class="px-4 py-3 text-left font-medium">Due Date</th>
+                        <th class="px-4 py-3 text-left font-medium">
+                            Priority
+                        </th>
+                        <th class="px-4 py-3 text-left font-medium">
+                            Start Date
+                        </th>
+                        <th class="px-4 py-3 text-left font-medium">
+                            Due Date
+                        </th>
                     </tr>
                 </thead>
 
@@ -25,7 +31,7 @@ defineProps<{
                     <tr
                         v-for="project in projects"
                         :key="project.id"
-                        class="border-b last:border-b-0 hover:bg-muted/30"
+                        class="hover:bg-muted/30 border-b last:border-b-0"
                     >
                         <td class="px-4 py-3">
                             {{ project.client_name }}
@@ -38,7 +44,7 @@ defineProps<{
 
                             <div
                                 v-if="project.description"
-                                class="mt-1 max-w-xs truncate text-xs text-muted-foreground"
+                                class="text-muted-foreground mt-1 max-w-xs truncate text-xs"
                             >
                                 {{ project.description }}
                             </div>
@@ -64,7 +70,7 @@ defineProps<{
                     <tr v-if="projects.length === 0">
                         <td
                             colspan="6"
-                            class="px-4 py-10 text-center text-muted-foreground"
+                            class="text-muted-foreground px-4 py-10 text-center"
                         >
                             No projects found.
                         </td>
