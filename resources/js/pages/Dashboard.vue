@@ -2,8 +2,10 @@
 import CreateProjectForm from '@/components/projects/CreateProjectForm.vue';
 import EditProjectForm from '@/components/projects/EditProjectForm.vue';
 import ProjectFilters from '@/components/projects/ProjectFilters.vue';
+import ProjectPagination from '@/components/projects/ProjectPagination.vue';
 import ProjectTable from '@/components/projects/ProjectTable.vue';
 import type {
+    PaginationMeta,
     Project,
     ProjectCollectionResponse,
     ProjectFiltersState,
@@ -24,6 +26,7 @@ defineOptions({
 
 const projects = ref<Project[]>([]);
 const selectedProject = ref<Project | null>(null);
+const pagination = ref<PaginationMeta | null>(null);
 
 const showCreateForm = ref(false);
 
@@ -67,6 +70,14 @@ async function handleProjectUpdated() {
     await loadProjects();
 }
 
+function applyFilters(filters: ProjectFiltersState) {
+    void loadProjects(filters, 1);
+}
+
+function changePage(page: number) {
+    void loadProjects(undefined, page);
+}
+
 async function deleteProject(project: Project) {
     const confirmed = window.confirm(
         `Are you sure you want to delete "${project.project_name}"?`,
@@ -84,7 +95,16 @@ async function deleteProject(project: Project) {
                 selectedProject.value = null;
             }
 
-            await loadProjects();
+            let page = pagination.value?.current_page ?? 1;
+
+            if (
+                projects.value.length === 1 &&
+                page > 1
+            ) {
+                page -= 1;
+            }
+
+            await loadProjects(undefined, page);
         },
 
         onHttpException: () => {
@@ -97,7 +117,10 @@ async function deleteProject(project: Project) {
     });
 }
 
-async function loadProjects(filters?: ProjectFiltersState) {
+async function loadProjects(
+    filters?: ProjectFiltersState,
+    page = pagination.value?.current_page ?? 1,
+) {
     if (filters) {
         activeFilters.value = { ...filters };
     }
@@ -121,10 +144,12 @@ async function loadProjects(filters?: ProjectFiltersState) {
 
     params.set('sort_by', current.sort_by);
     params.set('sort_direction', current.sort_direction);
+    params.set('page', page.toString());
 
     await projectsRequest.get(`/projects?${params.toString()}`, {
         onSuccess: (response) => {
             projects.value = response.data;
+            pagination.value = response.meta;
         },
 
         onHttpException: () => {
@@ -186,7 +211,7 @@ onMounted(loadProjects);
             {{ deleteError }}
         </div>
 
-        <ProjectFilters @apply="loadProjects" />
+        <ProjectFilters @apply="applyFilters" />
 
         <div
             v-if="projectsRequest.processing"
@@ -202,12 +227,22 @@ onMounted(loadProjects);
             {{ loadError }}
         </div>
 
-        <ProjectTable
-            v-else
-            :projects="projects"
-            :deleting="deleteRequest.processing"
-            @edit="startEditing"
-            @delete="deleteProject"
-        />
+        <template v-else>
+            <ProjectTable
+                :projects="projects"
+                :deleting="deleteRequest.processing"
+                @edit="startEditing"
+                @delete="deleteProject"
+            />
+
+            <ProjectPagination
+                v-if="pagination"
+                :meta="pagination"
+                :loading="projectsRequest.processing"
+                @change="changePage"
+            />
+        </template>
     </div>
+
+    
 </template>

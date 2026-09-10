@@ -34,9 +34,20 @@ export interface ProjectFormData {
     due_date: string;
 }
 
-//returned after POST
-export interface ProjectResponse {
-    data: Project;
+// returned after POST
+export interface PaginationMeta {
+    current_page: number;
+    from: number | null;
+    last_page: number;
+    per_page: number;
+    to: number | null;
+    total: number;
+}
+
+
+export interface ProjectCollectionResponse {
+    data: Project[];
+    meta: PaginationMeta;
 }
 
 
@@ -48,6 +59,7 @@ export type ProjectSortField =
     | 'created_at';
 
 export type ProjectSortDirection = 'asc' | 'desc';
+
 
 export interface ProjectFiltersState {
     search: string;

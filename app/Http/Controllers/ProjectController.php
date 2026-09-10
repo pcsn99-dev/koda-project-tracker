@@ -43,7 +43,7 @@ class ProjectController extends Controller
                 $filters['sort_by'] ?? 'created_at',
                 $filters['sort_direction'] ?? 'desc',
             )
-            ->get();
+            ->paginate(10);
 
         return ProjectResource::collection($projects);
     }
