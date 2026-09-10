@@ -12,6 +12,8 @@ import type {
 } from '@/types/project';
 import { Head, useHttp } from '@inertiajs/vue3';
 import { onMounted, ref } from 'vue';
+import DeleteProjectDialog from '@/components/projects/DeleteProjectDialog.vue';
+
 
 defineOptions({
     layout: {
@@ -24,6 +26,7 @@ defineOptions({
     },
 });
 
+const projectToDelete = ref<Project | null>(null);
 const projects = ref<Project[]>([]);
 const selectedProject = ref<Project | null>(null);
 const pagination = ref<PaginationMeta | null>(null);
@@ -78,12 +81,14 @@ function changePage(page: number) {
     void loadProjects(undefined, page);
 }
 
-async function deleteProject(project: Project) {
-    const confirmed = window.confirm(
-        `Are you sure you want to delete "${project.project_name}"?`,
-    );
+function requestDelete(project: Project) {
+    projectToDelete.value = project;
+}
 
-    if (!confirmed) {
+async function confirmDelete() {
+    const project = projectToDelete.value;
+
+    if (!project) {
         return;
     }
 
@@ -95,12 +100,11 @@ async function deleteProject(project: Project) {
                 selectedProject.value = null;
             }
 
+            projectToDelete.value = null;
+
             let page = pagination.value?.current_page ?? 1;
 
-            if (
-                projects.value.length === 1 &&
-                page > 1
-            ) {
+            if (projects.value.length === 1 && page > 1) {
                 page -= 1;
             }
 
@@ -232,7 +236,7 @@ onMounted(loadProjects);
                 :projects="projects"
                 :deleting="deleteRequest.processing"
                 @edit="startEditing"
-                @delete="deleteProject"
+                @delete="requestDelete"
             />
 
             <ProjectPagination
@@ -244,5 +248,12 @@ onMounted(loadProjects);
         </template>
     </div>
 
-    
+    <DeleteProjectDialog
+        v-if="projectToDelete"
+        :project="projectToDelete"
+        :processing="deleteRequest.processing"
+        @confirm="confirmDelete"
+        @cancel="projectToDelete = null"
+    />
+
 </template>
